@@ -5,7 +5,6 @@ import (
 	"github.com/blevesearch/bleve"
 	"os"
 	"testing"
-	"time"
 )
 
 const (
@@ -16,18 +15,18 @@ const (
 )
 
 var eventList = []WebpageBasic{
-	{"$1", "@mxidOne:server", "The European Go conference", "!room", time.Date(2015, 11, 19, 9, 0, 0, 0, time.UTC)},
+	{"@mxidOne:server", "The European Go conference", "!room"},
 
-	{"$2", "@mxidTwo:server", "The Go Conference in India", "!room", time.Date(2016, 2, 19, 0, 0, 0, 0, time.UTC)},
+	{"@mxidTwo:server", "The Go Conference in India", "!room"},
 
-	{"$3", "@mxidThr:server", "GopherCon, It is the largest event in the world dedicated solely to the Go programming language. It's attended by the best and the brightest of the Go team and community.", "!room2", time.Date(2016, 7, 11, 0, 0, 0, 0, time.UTC)},
+	{"@mxidThr:server", "GopherCon, It is the largest event in the world dedicated solely to the Go programming language. It's attended by the best and the brightest of the Go team and community.", "!room2"},
 }
 
 func TestIndexing(t *testing.T) {
 	//_, eventList := dbCreate()
 	idx := idxCreate()
 
-	err := eventList[0].Index(eventList[0].ID, idx)
+	err := eventList[0].Index(eventList[0].URL+eventList[0].Path, idx)
 	if err != nil {
 		t.Error("Wasn't possible create the index", err, ballotX)
 	} else {
@@ -81,8 +80,8 @@ func TestFindByAnything(t *testing.T) {
 
 // indexEvents add the eventList to the index
 func indexEvents(idx bleve.Index, eventList []WebpageBasic) {
-	for _, event := range eventList {
-		event.Index(event.ID, idx)
+	for _, webpage := range eventList {
+		webpage.Index(webpage.URL+webpage.Path, idx)
 	}
 }
 

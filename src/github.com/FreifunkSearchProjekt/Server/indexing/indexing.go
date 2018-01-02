@@ -9,10 +9,10 @@ import (
 	"github.com/blevesearch/bleve/analysis/tokenizer/single"
 	"github.com/blevesearch/bleve/analysis/tokenizer/unicode"
 	"github.com/blevesearch/bleve/mapping"
+	"github.com/blevesearch/bleve/search/highlight/format/html"
 	"log"
 	"os"
 	"sync"
-	"time"
 )
 
 type Indexer struct {
@@ -36,15 +36,24 @@ func (i *Indexer) getIndex(id string) (idx bleve.Index) {
 	return
 }
 
-//Todo Index Webpages
-func (i *Indexer) AddWebpage(ID, CommunityID string, wp WebpageBasic) {
+func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) {
 	wp.Index(ID, i.getIndex(CommunityID))
+}
+
+func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
+	return i.getIndex(CommunityID).Fields()
 }
 
 func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewMatchQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewFuzzyQuery(query))
-	searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
+	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
+	searchTerm := bleve.NewQueryStringQuery(query)
+	searchRequest := bleve.NewSearchRequest(searchTerm)
+	searchRequest.Fields = make([]string, 2)
+	searchRequest.Fields[0] = "URL"
+	searchRequest.Fields[1] = "Path"
+	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
 	return i.getIndex(id).Search(searchRequest)
 }
 
@@ -70,8 +79,15 @@ func Bleve(indexPath string) (bleve.Index, error) {
 	// if doesn't exists or something goes wrong...
 	if err != nil {
 		// create a new mapping file and create a new index
-		newMapping := bleve.NewIndexMapping()
+		var newMapping mapping.IndexMapping
+		newMapping, err = buildIndexMapping()
+		if err != nil {
+			return nil, err
+		}
 		bleveIdx, err = bleve.New("bleve/"+indexPath, newMapping)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	//if err == nil {
@@ -82,18 +98,16 @@ func Bleve(indexPath string) (bleve.Index, error) {
 
 //TODO change for Webpages
 type WebpageBasic struct {
-	ID   string
 	URL  string
 	Path string
 	Body string
-	Time time.Time
 }
 
 func (wp *WebpageBasic) Type() string {
 	return "event"
 }
 
-// Index is used to add the event in the bleve index.
+// Index is used to add the Webpage in the bleve index.
 func (wp *WebpageBasic) Index(ID string, index bleve.Index) error {
 	err := index.Index(ID, wp)
 	return err

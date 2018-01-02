@@ -2,10 +2,11 @@ package common
 
 import (
 	"flag"
-	"github.com/gorilla/mux"
 	"github.com/FreifunkSearchProjekt/Server/clientapi"
+	"github.com/FreifunkSearchProjekt/Server/community-connector-api"
 	"github.com/FreifunkSearchProjekt/Server/config"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"net/http/pprof"
@@ -39,6 +40,8 @@ func Setup() (r *mux.Router) {
 	}
 
 	clientapi.RegisterHandler(r, idxr)
+
+	community_connector_api.RegisterHandler(r, idxr)
 
 	return
 }
