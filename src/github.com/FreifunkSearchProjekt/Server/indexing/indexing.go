@@ -1,6 +1,5 @@
 package indexing
 
-
 import (
 	"encoding/base64"
 	"github.com/blevesearch/bleve"
@@ -37,8 +36,9 @@ func (i *Indexer) getIndex(id string) (idx bleve.Index) {
 	return
 }
 
-func (i *Indexer) AddEvent(ID, RoomID string, ev Event) {
-	ev.Index(ID, i.getIndex(RoomID))
+//Todo Index Webpages
+func (i *Indexer) AddWebpage(ID, CommunityID string, wp WebpageBasic) {
+	wp.Index(ID, i.getIndex(CommunityID))
 }
 
 func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
@@ -80,21 +80,22 @@ func Bleve(indexPath string) (bleve.Index, error) {
 	return bleveIdx, err
 }
 
-type Event struct {
-	//ID      string
-	Sender  string
-	Content map[string]interface{}
-	//RoomID  string
+//TODO change for Webpages
+type WebpageBasic struct {
+	ID   string
+	URL  string
+	Path string
+	Body string
 	Time time.Time
 }
 
-func (ev *Event) Type() string {
+func (wp *WebpageBasic) Type() string {
 	return "event"
 }
 
 // Index is used to add the event in the bleve index.
-func (ev *Event) Index(ID string, index bleve.Index) error {
-	err := index.Index(ID, ev)
+func (wp *WebpageBasic) Index(ID string, index bleve.Index) error {
+	err := index.Index(ID, wp)
 	return err
 }
 

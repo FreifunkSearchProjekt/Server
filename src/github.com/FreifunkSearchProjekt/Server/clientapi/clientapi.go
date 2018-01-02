@@ -2,17 +2,17 @@ package clientapi
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
+	"github.com/gorilla/mux"
 	"net/http"
 )
 
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
-	r.HandleFunc("/clientapi/search/{roomId}/{query}", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/clientapi/search/{communityID}/{query}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		roomId := vars["roomId"]
+		communityID := vars["communityID"]
 		query := vars["query"]
-		res, _ := idxr.Query(roomId, query)
+		res, _ := idxr.Query(communityID, query)
 
 		hits, err := json.Marshal(res.Hits)
 		if err != nil {

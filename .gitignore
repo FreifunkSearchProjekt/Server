@@ -14,3 +14,4 @@
 .glide/
 bin/
 pkg/
+/src/github.com/FreifunkSearchProjekt/indexing/bleve

@@ -15,7 +15,7 @@ const (
 	dbFile    = "test.sqlite3.db"
 )
 
-var eventList = []Event{
+var eventList = []WebpageBasic{
 	{"$1", "@mxidOne:server", "The European Go conference", "!room", time.Date(2015, 11, 19, 9, 0, 0, 0, time.UTC)},
 
 	{"$2", "@mxidTwo:server", "The Go Conference in India", "!room", time.Date(2016, 2, 19, 0, 0, 0, 0, time.UTC)},
@@ -27,7 +27,7 @@ func TestIndexing(t *testing.T) {
 	//_, eventList := dbCreate()
 	idx := idxCreate()
 
-	err := eventList[0].Index(idx)
+	err := eventList[0].Index(eventList[0].ID, idx)
 	if err != nil {
 		t.Error("Wasn't possible create the index", err, ballotX)
 	} else {
@@ -80,9 +80,9 @@ func TestFindByAnything(t *testing.T) {
 }
 
 // indexEvents add the eventList to the index
-func indexEvents(idx bleve.Index, eventList []Event) {
+func indexEvents(idx bleve.Index, eventList []WebpageBasic) {
 	for _, event := range eventList {
-		event.Index(idx)
+		event.Index(event.ID, idx)
 	}
 }
 
