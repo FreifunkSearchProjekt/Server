@@ -31,6 +31,10 @@ func buildIndexMapping() (mapping.IndexMapping, error) {
 	basicPageMapping.AddFieldMappingsAt("Body",
 		englishTextFieldMapping)
 
+	// Description
+	basicPageMapping.AddFieldMappingsAt("Description",
+		englishTextFieldMapping)
+
 	indexMapping := bleve.NewIndexMapping()
 	indexMapping.AddDocumentMapping("basicPage", basicPageMapping)
 

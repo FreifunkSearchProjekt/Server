@@ -34,9 +34,10 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		for i := range txn.BasicWebpages {
 			log.Println(txn.BasicWebpages[i])
 			webpage := indexing.WebpageBasic{
-				URL:  txn.BasicWebpages[i].URL,
-				Path: txn.BasicWebpages[i].Path,
-				Body: txn.BasicWebpages[i].Body,
+				URL:         txn.BasicWebpages[i].URL,
+				Path:        txn.BasicWebpages[i].Path,
+				Body:        txn.BasicWebpages[i].Body,
+				Description: txn.BasicWebpages[i].Description,
 			}
 			idxr.AddBasicWebpage(txn.BasicWebpages[i].URL+txn.BasicWebpages[i].Path, communityID, webpage)
 		}

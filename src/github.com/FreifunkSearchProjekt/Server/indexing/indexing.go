@@ -98,9 +98,10 @@ func Bleve(indexPath string) (bleve.Index, error) {
 
 //TODO change for Webpages
 type WebpageBasic struct {
-	URL  string
-	Path string
-	Body string
+	URL         string
+	Path        string
+	Body        string
+	Description string
 }
 
 func (wp *WebpageBasic) Type() string {
