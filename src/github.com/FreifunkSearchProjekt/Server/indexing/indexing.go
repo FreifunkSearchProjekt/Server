@@ -50,9 +50,11 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
 	searchTerm := bleve.NewQueryStringQuery(query)
 	searchRequest := bleve.NewSearchRequest(searchTerm)
-	searchRequest.Fields = make([]string, 2)
+	searchRequest.Fields = make([]string, 4)
 	searchRequest.Fields[0] = "URL"
 	searchRequest.Fields[1] = "Path"
+	searchRequest.Fields[2] = "Title"
+	searchRequest.Fields[3] = "Description"
 	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
 	return i.getIndex(id).Search(searchRequest)
 }
@@ -100,6 +102,7 @@ func Bleve(indexPath string) (bleve.Index, error) {
 type WebpageBasic struct {
 	URL         string
 	Path        string
+	Title       string
 	Body        string
 	Description string
 }

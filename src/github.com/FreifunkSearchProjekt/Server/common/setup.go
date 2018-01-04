@@ -7,6 +7,7 @@ import (
 	"github.com/FreifunkSearchProjekt/Server/config"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"net/http/pprof"
@@ -46,7 +47,8 @@ func Setup() (r *mux.Router) {
 	return
 }
 
-func Begin(handler http.Handler, conf *config.Config) {
+func Begin(cleanHandler http.Handler, conf *config.Config) {
+	handler := cors.Default().Handler(cleanHandler)
 	srv := &http.Server{
 		Handler:      handler,
 		Addr:         "127.0.0.1:9999",

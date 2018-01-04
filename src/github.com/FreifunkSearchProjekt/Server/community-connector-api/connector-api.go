@@ -36,6 +36,7 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 			webpage := indexing.WebpageBasic{
 				URL:         txn.BasicWebpages[i].URL,
 				Path:        txn.BasicWebpages[i].Path,
+				Title:       txn.BasicWebpages[i].Title,
 				Body:        txn.BasicWebpages[i].Body,
 				Description: txn.BasicWebpages[i].Description,
 			}

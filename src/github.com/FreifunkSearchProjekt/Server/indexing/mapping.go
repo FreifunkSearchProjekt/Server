@@ -27,6 +27,9 @@ func buildIndexMapping() (mapping.IndexMapping, error) {
 	basicPageMapping.AddFieldMappingsAt("URL", keywordFieldMapping)
 	basicPageMapping.AddFieldMappingsAt("Path", keywordFieldMapping)
 
+	// Title
+	basicPageMapping.AddFieldMappingsAt("Title", keywordFieldMapping)
+
 	// body
 	basicPageMapping.AddFieldMappingsAt("Body",
 		englishTextFieldMapping)

@@ -15,11 +15,11 @@ const (
 )
 
 var eventList = []WebpageBasic{
-	{"@mxidOne:server", "The European Go conference", "!room", ""},
+	{"@mxidOne:server", "The European Go conference", "", "!room", ""},
 
-	{"@mxidTwo:server", "The Go Conference in India", "!room", ""},
+	{"@mxidTwo:server", "The Go Conference in India", "", "!room", ""},
 
-	{"@mxidThr:server", "GopherCon, It is the largest event in the world dedicated solely to the Go programming language. It's attended by the best and the brightest of the Go team and community.", "!room2", ""},
+	{"@mxidThr:server", "GopherCon, It is the largest event in the world dedicated solely to the Go programming language. It's attended by the best and the brightest of the Go team and community.", "", "!room2", ""},
 }
 
 func TestIndexing(t *testing.T) {
