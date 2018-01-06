@@ -51,7 +51,7 @@ func Begin(cleanHandler http.Handler, conf *config.Config) {
 	handler := cors.Default().Handler(cleanHandler)
 	srv := &http.Server{
 		Handler:      handler,
-		Addr:         "127.0.0.1:9999",
+		Addr:         "0.0.0.0:9999",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
