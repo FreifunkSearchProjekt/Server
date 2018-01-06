@@ -14,6 +14,7 @@ type transaction struct {
 
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 	r.HandleFunc("/connector_api/index/{communityID}/", func(w http.ResponseWriter, r *http.Request) {
+		log.Print("Got new URL to Index: ")
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]
 
@@ -32,9 +33,10 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		}
 
 		for i := range txn.BasicWebpages {
-			log.Println(txn.BasicWebpages[i])
+			log.Println(txn.BasicWebpages[i].URL)
 			webpage := indexing.WebpageBasic{
 				URL:         txn.BasicWebpages[i].URL,
+				Host:        txn.BasicWebpages[i].Host,
 				Path:        txn.BasicWebpages[i].Path,
 				Title:       txn.BasicWebpages[i].Title,
 				Body:        txn.BasicWebpages[i].Body,

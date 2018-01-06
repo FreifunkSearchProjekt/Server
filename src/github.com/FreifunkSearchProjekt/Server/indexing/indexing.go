@@ -50,11 +50,12 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
 	searchTerm := bleve.NewQueryStringQuery(query)
 	searchRequest := bleve.NewSearchRequest(searchTerm)
-	searchRequest.Fields = make([]string, 4)
+	searchRequest.Fields = make([]string, 5)
 	searchRequest.Fields[0] = "URL"
-	searchRequest.Fields[1] = "Path"
-	searchRequest.Fields[2] = "Title"
-	searchRequest.Fields[3] = "Description"
+	searchRequest.Fields[1] = "Host"
+	searchRequest.Fields[2] = "Path"
+	searchRequest.Fields[3] = "Title"
+	searchRequest.Fields[4] = "Description"
 	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
 	return i.getIndex(id).Search(searchRequest)
 }
@@ -98,9 +99,9 @@ func Bleve(indexPath string) (bleve.Index, error) {
 	return bleveIdx, err
 }
 
-//TODO change for Webpages
 type WebpageBasic struct {
 	URL         string
+	Host        string
 	Path        string
 	Title       string
 	Body        string
