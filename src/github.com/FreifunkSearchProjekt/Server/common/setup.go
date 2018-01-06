@@ -49,12 +49,19 @@ func Setup() (r *mux.Router) {
 
 func Begin(cleanHandler http.Handler, conf *config.Config) {
 	handler := cors.Default().Handler(cleanHandler)
-	srv := &http.Server{
+	srv4 := &http.Server{
 		Handler:      handler,
 		Addr:         "0.0.0.0:9999",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+	log.Fatal(srv4.ListenAndServe())
 
-	log.Fatal(srv.ListenAndServe())
+	srv6 := &http.Server{
+		Handler:      handler,
+		Addr:         "[::]:9999",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+	log.Fatal(srv6.ListenAndServe())
 }
