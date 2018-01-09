@@ -8,6 +8,27 @@ import (
 	"net/http"
 )
 
+func truncateString(str string, num int) string {
+	bnoden := str
+	if len(str) > num {
+		if num > 3 {
+			num -= 3
+		}
+		x := 0
+		newString := str[0 : num+x]
+		if newString[len(newString)-1:] != " " {
+			for newString[len(newString)-1:] != " " {
+				x += 1
+				newString = str[0 : num+x]
+			}
+			bnoden = str[0:num+x-1] + "..."
+		} else {
+			bnoden = newString + "..."
+		}
+	}
+	return bnoden
+}
+
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 	r.HandleFunc("/clientapi/search/{communityID}/{query}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -19,6 +40,10 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		if queryErr != nil {
 			http.Error(w, queryErr.Error(), http.StatusInternalServerError)
 			return
+		}
+
+		for _, v := range res.Hits {
+			v.Fields["Description"] = truncateString(v.Fields["Description"].(string), 260)
 		}
 
 		hits, err := json.Marshal(res)
