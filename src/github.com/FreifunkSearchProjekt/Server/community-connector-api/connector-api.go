@@ -8,17 +8,13 @@ import (
 	"net/http"
 )
 
-type transaction struct {
-	BasicWebpages []indexing.WebpageBasic `json:"basic_webpages"`
-}
-
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 	r.HandleFunc("/connector_api/index/{communityID}/", func(w http.ResponseWriter, r *http.Request) {
 		log.Print("Got new URL to Index: ")
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]
 
-		var txn transaction
+		var txn indexing.Transaction
 
 		if r.Body == nil {
 			http.Error(w, "Please send a request body", http.StatusBadRequest)
@@ -43,6 +39,18 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 				Description: txn.BasicWebpages[i].Description,
 			}
 			idxr.AddBasicWebpage(txn.BasicWebpages[i].URL+txn.BasicWebpages[i].Path, communityID, webpage)
+		}
+
+		for i := range txn.RssFeed {
+			log.Println(txn.RssFeed[i].URL)
+			rssfeed := indexing.FeedBasic{
+				URL:         txn.RssFeed[i].URL,
+				Host:        txn.RssFeed[i].Host,
+				Path:        txn.RssFeed[i].Path,
+				Title:       txn.RssFeed[i].Title,
+				Description: txn.RssFeed[i].Description,
+			}
+			idxr.AddBasicFeed(txn.RssFeed[i].URL+txn.RssFeed[i].Path, communityID, rssfeed)
 		}
 
 		w.WriteHeader(http.StatusOK)

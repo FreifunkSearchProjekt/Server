@@ -40,6 +40,10 @@ func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) {
 	wp.Index(ID, i.getIndex(CommunityID))
 }
 
+func (i *Indexer) AddBasicFeed(ID, CommunityID string, fb FeedBasic) {
+	fb.Index(ID, i.getIndex(CommunityID))
+}
+
 func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
 	return i.getIndex(CommunityID).Fields()
 }
@@ -97,25 +101,6 @@ func Bleve(indexPath string) (bleve.Index, error) {
 	//	bleveIdxMap[indexPath] = bleveIdx
 	//}
 	return bleveIdx, err
-}
-
-type WebpageBasic struct {
-	URL         string
-	Host        string
-	Path        string
-	Title       string
-	Body        string
-	Description string
-}
-
-func (wp *WebpageBasic) Type() string {
-	return "event"
-}
-
-// Index is used to add the Webpage in the bleve index.
-func (wp *WebpageBasic) Index(ID string, index bleve.Index) error {
-	err := index.Index(ID, wp)
-	return err
 }
 
 func OpenIndex(databasePath string) bleve.Index {
