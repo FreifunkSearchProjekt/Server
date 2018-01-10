@@ -40,6 +40,7 @@ func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) error
 		return err
 	}
 	wp.Index(ID, index)
+	return nil
 }
 
 func (i *Indexer) AddBasicFeed(ID, CommunityID string, fb FeedBasic) error {
@@ -48,6 +49,7 @@ func (i *Indexer) AddBasicFeed(ID, CommunityID string, fb FeedBasic) error {
 		return err
 	}
 	fb.Index(ID, index)
+	return nil
 }
 
 func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
