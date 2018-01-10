@@ -13,7 +13,7 @@ type Indexer struct {
 	sync.RWMutex
 }
 
-func (i *Indexer) getIndex(id string) (idx bleve.Index) {
+func (i *Indexer) getIndex(id string) (idx bleve.Index, err error) {
 	i.RLock()
 	idx = i.idxs[id]
 	i.RUnlock()
@@ -23,22 +23,39 @@ func (i *Indexer) getIndex(id string) (idx bleve.Index) {
 	}
 
 	i.Lock()
-	idx, _ = Bleve(base64.URLEncoding.EncodeToString([]byte(id)))
+	var BleveErr error
+	idx, BleveErr = Bleve(base64.URLEncoding.EncodeToString([]byte(id)))
+	if BleveErr != nil {
+		err = BleveErr
+		return
+	}
 	i.idxs[id] = idx
 	i.Unlock()
 	return
 }
 
-func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) {
-	wp.Index(ID, i.getIndex(CommunityID))
+func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) error {
+	index, err := i.getIndex(CommunityID)
+	if err != nil {
+		return err
+	}
+	wp.Index(ID, index)
 }
 
-func (i *Indexer) AddBasicFeed(ID, CommunityID string, fb FeedBasic) {
-	fb.Index(ID, i.getIndex(CommunityID))
+func (i *Indexer) AddBasicFeed(ID, CommunityID string, fb FeedBasic) error {
+	index, err := i.getIndex(CommunityID)
+	if err != nil {
+		return err
+	}
+	fb.Index(ID, index)
 }
 
 func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
-	return i.getIndex(CommunityID).Fields()
+	index, err := i.getIndex(CommunityID)
+	if err != nil {
+		return nil, err
+	}
+	return index.Fields()
 }
 
 func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
@@ -54,7 +71,11 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	searchRequest.Fields[3] = "Title"
 	searchRequest.Fields[4] = "Description"
 	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
-	return i.getIndex(id).Search(searchRequest)
+	index, err := i.getIndex(id)
+	if err != nil {
+		return nil, err
+	}
+	return index.Search(searchRequest)
 }
 
 func NewIndexer() Indexer {
