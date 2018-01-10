@@ -4,7 +4,7 @@ import "github.com/blevesearch/bleve"
 
 type Transaction struct {
 	BasicWebpages []WebpageBasic `json:"basic_webpages"`
-	RssFeed       []FeedBasic    `json:"basic_webpages"`
+	RssFeed       []FeedBasic    `json:"rss_feeds"`
 }
 
 type WebpageBasic struct {
