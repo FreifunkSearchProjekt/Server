@@ -39,7 +39,7 @@ func buildIndexMapping() (mapping.IndexMapping, error) {
 
 	// body
 	basicPageMapping.AddFieldMappingsAt("Body",
-		htmlFieldMapping)
+		englishTextFieldMapping)
 
 	// Description
 	basicPageMapping.AddFieldMappingsAt("Description",
