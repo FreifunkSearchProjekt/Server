@@ -8,6 +8,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/Smerity/govarint",
+			"repository": "https://github.com/Smerity/govarint",
+			"revision": "7265e41f48f15fd61751e16da866af3c704bb3ab",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/blevesearch/bleve",
 			"repository": "https://github.com/blevesearch/bleve",
 			"revision": "b1a079fe5722c20b1972b8d12a5df8d229d5bc0f",
