@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
-	"github.com/blevesearch/bleve/search/highlight/format/html"
 	"sync"
 )
 
@@ -72,10 +71,7 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	searchRequest.Fields[2] = "Path"
 	searchRequest.Fields[3] = "Title"
 	searchRequest.Fields[4] = "Description"
-	searchRequest.Highlight.Fields = make([]string, 2)
-	searchRequest.Highlight.Fields[0] = "Description"
-	searchRequest.Highlight.Fields[2] = "Body"
-	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
+	//searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
 	index, err := i.getIndex(id)
 	if err != nil {
 		return nil, err
