@@ -43,7 +43,9 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		}
 
 		for _, v := range res.Hits {
-			v.Fields["Description"] = truncateString(v.Fields["Description"].(string), 260)
+			if v.Fields["Description"] != nil {
+				v.Fields["Description"] = truncateString(v.Fields["Description"].(string), 260)
+			}
 		}
 
 		hits, err := json.Marshal(res)
