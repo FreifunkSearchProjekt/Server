@@ -74,6 +74,19 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/couchbase/vellum",
+			"repository": "https://github.com/couchbase/vellum",
+			"revision": "ed84a675e24ed0a0bf6859b1ddec7e7c858354bd",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cpuguy83/go-md2man/md2man",
+			"repository": "https://github.com/cpuguy83/go-md2man",
+			"revision": "8d868be6e9bf9d5350910bab97a050e49887600f",
+			"branch": "master",
+			"path": "/md2man"
+		},
+		{
 			"importpath": "github.com/cznic/b",
 			"repository": "https://github.com/cznic/b",
 			"revision": "c0c71e655879a2848b5a0e0208b63f97325cbacd",
@@ -196,6 +209,12 @@
 			"importpath": "github.com/rs/cors",
 			"repository": "https://github.com/rs/cors",
 			"revision": "eabcc6af4bbe5ad3a949d36450326a2b0b9894b8",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/russross/blackfriday",
+			"repository": "https://github.com/russross/blackfriday",
+			"revision": "6d1ef893fcb01b4f50cb6e57ed7df3e2e627b6b2",
 			"branch": "master"
 		},
 		{
