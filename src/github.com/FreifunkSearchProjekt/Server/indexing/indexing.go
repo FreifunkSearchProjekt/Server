@@ -3,15 +3,8 @@ package indexing
 import (
 	"encoding/base64"
 	"github.com/blevesearch/bleve"
-	"github.com/blevesearch/bleve/analysis/analyzer/custom"
-	"github.com/blevesearch/bleve/analysis/token/lowercase"
-	"github.com/blevesearch/bleve/analysis/token/ngram"
-	"github.com/blevesearch/bleve/analysis/tokenizer/single"
-	"github.com/blevesearch/bleve/analysis/tokenizer/unicode"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/highlight/format/html"
-	"log"
-	"os"
 	"sync"
 )
 
@@ -96,105 +89,5 @@ func Bleve(indexPath string) (bleve.Index, error) {
 			return nil, err
 		}
 	}
-
-	//if err == nil {
-	//	bleveIdxMap[indexPath] = bleveIdx
-	//}
 	return bleveIdx, err
-}
-
-func OpenIndex(databasePath string) bleve.Index {
-	index, err := bleve.Open(databasePath)
-
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(-1)
-	}
-
-	return index
-}
-
-func CreateIndex(databasePath string) bleve.Index {
-	mapping := bleve.NewIndexMapping()
-	mapping = addCustomAnalyzers(mapping)
-	mapping = createEventMapping(mapping)
-
-	index, err := bleve.New(databasePath, mapping)
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(-1)
-	}
-
-	return index
-}
-
-func createEventMapping(indexMapping *mapping.IndexMappingImpl) *mapping.IndexMappingImpl {
-	eventMapping := bleve.NewDocumentMapping()
-
-	eventIDMapping := bleve.NewTextFieldMapping()
-	eventIDMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("event_id", eventIDMapping)
-
-	senderMapping := bleve.NewTextFieldMapping()
-	senderMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("sender", senderMapping)
-
-	roomIDMapping := bleve.NewTextFieldMapping()
-	roomIDMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("room_id", roomIDMapping)
-
-	contentMapping := bleve.NewTextFieldMapping()
-	contentMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("content", contentMapping)
-
-	indexMapping.AddDocumentMapping("event", eventMapping)
-
-	return indexMapping
-}
-
-func addCustomTokenFilter(indexMapping *mapping.IndexMappingImpl) *mapping.IndexMappingImpl {
-	err := indexMapping.AddCustomTokenFilter("bigram_tokenfilter", map[string]interface{}{
-		"type": ngram.Name,
-		//"side": ngram.FRONT,
-		"min": 3.0,
-		"max": 25.0,
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return indexMapping
-}
-
-func addCustomAnalyzers(indexMapping *mapping.IndexMappingImpl) *mapping.IndexMappingImpl {
-	indexMapping = addCustomTokenFilter(indexMapping)
-
-	err := indexMapping.AddCustomAnalyzer("not_analyzed", map[string]interface{}{
-		"type":      custom.Name,
-		"tokenizer": single.Name,
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = indexMapping.AddCustomAnalyzer("fulltext_ngram", map[string]interface{}{
-		"type":      custom.Name,
-		"tokenizer": unicode.Name,
-		"token_filters": []string{
-			lowercase.Name,
-			"bigram_tokenfilter",
-		},
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return indexMapping
-}
-
-func Execute() {
-
 }
