@@ -4,7 +4,7 @@
 		{
 			"importpath": "github.com/blevesearch/bleve",
 			"repository": "https://github.com/blevesearch/bleve",
-			"revision": "def77cb5485838fb317686cd23e2d0da1d6b8491",
+			"revision": "b1a079fe5722c20b1972b8d12a5df8d229d5bc0f",
 			"branch": "master"
 		},
 		{

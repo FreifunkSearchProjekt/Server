@@ -112,5 +112,5 @@ func Bleve(indexPath string) (bleve.Index, error) {
 			return nil, err
 		}
 	}
-	return bleveIdx, err
+	return bleveIdx, nil
 }
