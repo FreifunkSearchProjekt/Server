@@ -66,11 +66,11 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	searchTerm := bleve.NewQueryStringQuery(query)
 	searchRequest := bleve.NewSearchRequest(searchTerm)
 	searchRequest.Fields = make([]string, 5)
-	searchRequest.Fields[0] = "URL"
-	searchRequest.Fields[1] = "Host"
-	searchRequest.Fields[2] = "Path"
-	searchRequest.Fields[3] = "Title"
-	searchRequest.Fields[4] = "Description"
+	searchRequest.Fields[0] = "url"
+	searchRequest.Fields[1] = "host"
+	searchRequest.Fields[2] = "path"
+	searchRequest.Fields[3] = "title"
+	searchRequest.Fields[4] = "description"
 	//searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
 	index, err := i.getIndex(id)
 	if err != nil {
