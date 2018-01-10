@@ -2,6 +2,12 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/RoaringBitmap/roaring",
+			"repository": "https://github.com/RoaringBitmap/roaring",
+			"revision": "0a6691af7cd3c226e37bcf45fa19f427b615edcd",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/blevesearch/bleve",
 			"repository": "https://github.com/blevesearch/bleve",
 			"revision": "b1a079fe5722c20b1972b8d12a5df8d229d5bc0f",
@@ -71,6 +77,12 @@
 			"importpath": "github.com/edsrzf/mmap-go",
 			"repository": "https://github.com/edsrzf/mmap-go",
 			"revision": "0bce6a6887123b67a60366d2c9fe2dfb74289d2e",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/glycerine/go-unsnap-stream",
+			"repository": "https://github.com/glycerine/go-unsnap-stream",
+			"revision": "62a9a9eb44fd8932157b1a8ace2149eff5971af6",
 			"branch": "master"
 		},
 		{
@@ -163,6 +175,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/philhofer/fwd",
+			"repository": "https://github.com/philhofer/fwd",
+			"revision": "bb6d471dc95d4fe11e432687f8b70ff496cf3136",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/rcrowley/go-metrics",
 			"repository": "https://github.com/rcrowley/go-metrics",
 			"revision": "e181e095bae94582363434144c61a9653aff6e50",
@@ -210,6 +228,13 @@
 			"repository": "https://github.com/tecbot/gorocksdb",
 			"revision": "15d5431583170b15f738a3e67ade13749f458058",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/tinylib/msgp/msgp",
+			"repository": "https://github.com/tinylib/msgp",
+			"revision": "428e467e72ad3e435f398b9b148f581c69444410",
+			"branch": "master",
+			"path": "/msgp"
 		},
 		{
 			"importpath": "github.com/willf/bitset",
