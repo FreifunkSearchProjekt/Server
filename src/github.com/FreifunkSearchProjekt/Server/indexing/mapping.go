@@ -6,6 +6,7 @@ import (
 	"github.com/blevesearch/bleve/analysis/char/html"
 	"github.com/blevesearch/bleve/analysis/lang/en"
 	"github.com/blevesearch/bleve/mapping"
+	"github.com/blevesearch/blevex/detectlang"
 )
 
 func buildIndexMapping() (mapping.IndexMapping, error) {
@@ -20,6 +21,12 @@ func buildIndexMapping() (mapping.IndexMapping, error) {
 	// a generic reusable mapping for keyword text
 	keywordFieldMapping := bleve.NewTextFieldMapping()
 	keywordFieldMapping.Analyzer = keyword.Name
+
+	// a specific mapping to index the description fields
+	// detected language
+	descriptionLangFieldMapping := bleve.NewTextFieldMapping()
+	descriptionLangFieldMapping.Name = "descriptionLang"
+	descriptionLangFieldMapping.Analyzer = detectlang.AnalyzerName
 
 	basicPageMapping := bleve.NewDocumentMapping()
 
@@ -36,10 +43,24 @@ func buildIndexMapping() (mapping.IndexMapping, error) {
 
 	// Description
 	basicPageMapping.AddFieldMappingsAt("Description",
-		englishTextFieldMapping)
+		descriptionLangFieldMapping)
+
+	basicFeedMapping := bleve.NewDocumentMapping()
+
+	// url
+	basicFeedMapping.AddFieldMappingsAt("URL", keywordFieldMapping)
+	basicFeedMapping.AddFieldMappingsAt("Path", keywordFieldMapping)
+
+	// Title
+	basicFeedMapping.AddFieldMappingsAt("Title", keywordFieldMapping)
+
+	// Description
+	basicFeedMapping.AddFieldMappingsAt("Description",
+		descriptionLangFieldMapping)
 
 	indexMapping := bleve.NewIndexMapping()
-	indexMapping.AddDocumentMapping("basicPage", basicPageMapping)
+	indexMapping.AddDocumentMapping("basicWebpage", basicPageMapping)
+	indexMapping.AddDocumentMapping("basicFeed", basicFeedMapping)
 
 	indexMapping.TypeField = "type"
 	indexMapping.DefaultAnalyzer = "en"

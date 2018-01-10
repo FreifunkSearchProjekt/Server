@@ -3,15 +3,8 @@ package indexing
 import (
 	"encoding/base64"
 	"github.com/blevesearch/bleve"
-	"github.com/blevesearch/bleve/analysis/analyzer/custom"
-	"github.com/blevesearch/bleve/analysis/token/lowercase"
-	"github.com/blevesearch/bleve/analysis/token/ngram"
-	"github.com/blevesearch/bleve/analysis/tokenizer/single"
-	"github.com/blevesearch/bleve/analysis/tokenizer/unicode"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/highlight/format/html"
-	"log"
-	"os"
 	"sync"
 )
 
@@ -20,7 +13,7 @@ type Indexer struct {
 	sync.RWMutex
 }
 
-func (i *Indexer) getIndex(id string) (idx bleve.Index) {
+func (i *Indexer) getIndex(id string) (idx bleve.Index, err error) {
 	i.RLock()
 	idx = i.idxs[id]
 	i.RUnlock()
@@ -30,18 +23,41 @@ func (i *Indexer) getIndex(id string) (idx bleve.Index) {
 	}
 
 	i.Lock()
-	idx, _ = Bleve(base64.URLEncoding.EncodeToString([]byte(id)))
+	var BleveErr error
+	idx, BleveErr = Bleve(base64.URLEncoding.EncodeToString([]byte(id)))
+	if BleveErr != nil {
+		err = BleveErr
+		return
+	}
 	i.idxs[id] = idx
 	i.Unlock()
 	return
 }
 
-func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) {
-	wp.Index(ID, i.getIndex(CommunityID))
+func (i *Indexer) AddBasicWebpage(ID, CommunityID string, wp WebpageBasic) error {
+	index, err := i.getIndex(CommunityID)
+	if err != nil {
+		return err
+	}
+	wp.Index(ID, index)
+	return nil
+}
+
+func (i *Indexer) AddBasicFeed(ID, CommunityID string, fb FeedBasic) error {
+	index, err := i.getIndex(CommunityID)
+	if err != nil {
+		return err
+	}
+	fb.Index(ID, index)
+	return nil
 }
 
 func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
-	return i.getIndex(CommunityID).Fields()
+	index, err := i.getIndex(CommunityID)
+	if err != nil {
+		return nil, err
+	}
+	return index.Fields()
 }
 
 func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
@@ -51,13 +67,17 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	searchTerm := bleve.NewQueryStringQuery(query)
 	searchRequest := bleve.NewSearchRequest(searchTerm)
 	searchRequest.Fields = make([]string, 5)
-	searchRequest.Fields[0] = "URL"
-	searchRequest.Fields[1] = "Host"
-	searchRequest.Fields[2] = "Path"
-	searchRequest.Fields[3] = "Title"
-	searchRequest.Fields[4] = "Description"
+	searchRequest.Fields[0] = "url"
+	searchRequest.Fields[1] = "host"
+	searchRequest.Fields[2] = "path"
+	searchRequest.Fields[3] = "title"
+	searchRequest.Fields[4] = "description"
 	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
-	return i.getIndex(id).Search(searchRequest)
+	index, err := i.getIndex(id)
+	if err != nil {
+		return nil, err
+	}
+	return index.Search(searchRequest)
 }
 
 func NewIndexer() Indexer {
@@ -92,124 +112,5 @@ func Bleve(indexPath string) (bleve.Index, error) {
 			return nil, err
 		}
 	}
-
-	//if err == nil {
-	//	bleveIdxMap[indexPath] = bleveIdx
-	//}
-	return bleveIdx, err
-}
-
-type WebpageBasic struct {
-	URL         string
-	Host        string
-	Path        string
-	Title       string
-	Body        string
-	Description string
-}
-
-func (wp *WebpageBasic) Type() string {
-	return "event"
-}
-
-// Index is used to add the Webpage in the bleve index.
-func (wp *WebpageBasic) Index(ID string, index bleve.Index) error {
-	err := index.Index(ID, wp)
-	return err
-}
-
-func OpenIndex(databasePath string) bleve.Index {
-	index, err := bleve.Open(databasePath)
-
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(-1)
-	}
-
-	return index
-}
-
-func CreateIndex(databasePath string) bleve.Index {
-	mapping := bleve.NewIndexMapping()
-	mapping = addCustomAnalyzers(mapping)
-	mapping = createEventMapping(mapping)
-
-	index, err := bleve.New(databasePath, mapping)
-	if err != nil {
-		log.Fatal(err)
-		os.Exit(-1)
-	}
-
-	return index
-}
-
-func createEventMapping(indexMapping *mapping.IndexMappingImpl) *mapping.IndexMappingImpl {
-	eventMapping := bleve.NewDocumentMapping()
-
-	eventIDMapping := bleve.NewTextFieldMapping()
-	eventIDMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("event_id", eventIDMapping)
-
-	senderMapping := bleve.NewTextFieldMapping()
-	senderMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("sender", senderMapping)
-
-	roomIDMapping := bleve.NewTextFieldMapping()
-	roomIDMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("room_id", roomIDMapping)
-
-	contentMapping := bleve.NewTextFieldMapping()
-	contentMapping.IncludeInAll = false
-	eventMapping.AddFieldMappingsAt("content", contentMapping)
-
-	indexMapping.AddDocumentMapping("event", eventMapping)
-
-	return indexMapping
-}
-
-func addCustomTokenFilter(indexMapping *mapping.IndexMappingImpl) *mapping.IndexMappingImpl {
-	err := indexMapping.AddCustomTokenFilter("bigram_tokenfilter", map[string]interface{}{
-		"type": ngram.Name,
-		//"side": ngram.FRONT,
-		"min": 3.0,
-		"max": 25.0,
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return indexMapping
-}
-
-func addCustomAnalyzers(indexMapping *mapping.IndexMappingImpl) *mapping.IndexMappingImpl {
-	indexMapping = addCustomTokenFilter(indexMapping)
-
-	err := indexMapping.AddCustomAnalyzer("not_analyzed", map[string]interface{}{
-		"type":      custom.Name,
-		"tokenizer": single.Name,
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = indexMapping.AddCustomAnalyzer("fulltext_ngram", map[string]interface{}{
-		"type":      custom.Name,
-		"tokenizer": unicode.Name,
-		"token_filters": []string{
-			lowercase.Name,
-			"bigram_tokenfilter",
-		},
-	})
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return indexMapping
-}
-
-func Execute() {
-
+	return bleveIdx, nil
 }
