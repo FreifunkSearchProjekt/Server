@@ -41,7 +41,7 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 			}
 			err := idxr.AddBasicWebpage(txn.BasicWebpages[i].URL+txn.BasicWebpages[i].Path, communityID, webpage)
 			if err != nil {
-				log.Fatalf("[ERR] %s\n", err)
+				log.Println("[ERR] ", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				w.Write([]byte("{}"))
 				return
@@ -59,7 +59,7 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 			}
 			err := idxr.AddBasicFeed(txn.RssFeed[i].URL+txn.RssFeed[i].Path, communityID, rssfeed)
 			if err != nil {
-				log.Fatalf("[ERR] %s\n", err)
+				log.Println("[ERR] ", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				w.Write([]byte("{}"))
 				return
