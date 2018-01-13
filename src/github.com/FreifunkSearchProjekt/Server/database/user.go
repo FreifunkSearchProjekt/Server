@@ -12,7 +12,7 @@ func CheckIfUserIsAlreadyRegistered(communityID string) (bool, error) {
 
 	DBUseErr := db.View(func(txn *badger.Txn) error {
 		_, err := txn.Get([]byte("account/" + communityID))
-		if err != nil {
+		if err != nil && err != badger.ErrKeyNotFound {
 			return err
 		}
 		if err == badger.ErrKeyNotFound {

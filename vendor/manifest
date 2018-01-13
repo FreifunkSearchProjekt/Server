@@ -111,6 +111,13 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/dgraph-io/badger/...",
+			"repository": "https://github.com/dgraph-io/badger",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"branch": "master",
+			"path": "/..."
+		},
+		{
 			"importpath": "github.com/dgrijalva/jwt-go",
 			"repository": "https://github.com/dgrijalva/jwt-go",
 			"revision": "dbeaa9332f19a944acb5736b4456cfcc02140e29",
