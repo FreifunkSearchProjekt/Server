@@ -2,11 +2,21 @@ package clientapi
 
 import (
 	"encoding/json"
+	"github.com/FreifunkSearchProjekt/Server/database"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
+
+var SigningKey = []byte("Jl3DyPkeWLjCytk61dXVHLPZcyr8WXwTinPLn3ttgOI6uxNtEffgZxxuMENXfVg4qK5lqgw3AjeKKBVxCTDUMWhi9uWMahPe0s2Y3BMF0x7K2bKE3zyR3DOt2eqhnbPL")
+
+type registerRequest struct {
+	CommunityID   string `json:"community_id"`
+	CommunityName string `json:"community_name"`
+	Homepage      string `json:"homepage"`
+}
 
 func truncateString(str string, num int) string {
 	bnoden := str
@@ -56,7 +66,7 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(hits)
-	})
+	}).Methods("GET")
 
 	r.HandleFunc("/clientapi/fields/{communityID}/", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -77,5 +87,74 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(hits)
-	})
+	}).Methods("GET")
+
+	r.HandleFunc("/clientapi/account/{communityID}/register", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		communityID := vars["communityID"]
+
+		var txn registerRequest
+
+		if r.Body == nil {
+			http.Error(w, "Please send a request body", http.StatusBadRequest)
+			return
+		}
+		err := json.NewDecoder(r.Body).Decode(&txn)
+		if err != nil {
+			log.Fatalf("[ERR] %s\n", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		if txn.CommunityID != communityID {
+			http.Error(w, "Community ID doesn't match Body", http.StatusBadRequest)
+			return
+		}
+
+		used, err := database.CheckIfUserIsAlreadyRegistered(communityID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if used {
+			http.Error(w, "User already taken", http.StatusConflict)
+			return
+		}
+
+		/* Create the token */
+		token := jwt.New(jwt.SigningMethodHS256)
+
+		/* Create a map to store our claims */
+		claims := token.Claims.(jwt.MapClaims)
+
+		/* Set token claims */
+		claims["CommunityName"] = txn.CommunityName
+		claims["CommunityID"] = txn.CommunityID
+
+		/* Sign the token with our secret */
+		tokenString, _ := token.SignedString(SigningKey)
+
+		saveErr := database.SaveNewUser(tokenString, txn.CommunityID, txn.CommunityName)
+		if saveErr != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		/* Finally, write the token to the browser window */
+		w.Write([]byte(tokenString))
+	}).Methods("POST")
+
+	/*r.HandleFunc("/clientapi/account/{communityID}/edit", func(w http.ResponseWriter, r *http.Request) {
+		accessToken := r.Header.Get("Access-Token")
+		if accessToken == "" {
+
+		}
+
+		vars := mux.Vars(r)
+		communityID := vars["communityID"]
+
+		http.Error(w, "Not implemented", http.StatusBadRequest)
+		w.Write([]byte("{}"))
+		return
+	})*/
 }

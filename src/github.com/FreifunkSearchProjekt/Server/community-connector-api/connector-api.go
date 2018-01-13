@@ -2,14 +2,17 @@ package community_connector_api
 
 import (
 	"encoding/json"
+	"github.com/FreifunkSearchProjekt/Server/clientapi"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
+	"github.com/auth0/go-jwt-middleware"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
-	r.HandleFunc("/connector_api/index/{communityID}/", func(w http.ResponseWriter, r *http.Request) {
+	r.Handle("/connector_api/index/{communityID}/", jwtMiddleware.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log.Print("Got new URL to Index: ")
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]
@@ -68,5 +71,12 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("{}"))
-	})
+	})))
 }
+
+var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
+	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
+		return clientapi.SigningKey, nil
+	},
+	SigningMethod: jwt.SigningMethodHS256,
+})

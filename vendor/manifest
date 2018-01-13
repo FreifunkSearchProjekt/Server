@@ -2,6 +2,12 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/AndreasBriese/bbloom",
+			"repository": "https://github.com/AndreasBriese/bbloom",
+			"revision": "28f7e881ca57bc00e028f9ede9f0d9104cfeef5e",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/RoaringBitmap/roaring",
 			"repository": "https://github.com/RoaringBitmap/roaring",
 			"revision": "0a6691af7cd3c226e37bcf45fa19f427b615edcd",
@@ -11,6 +17,12 @@
 			"importpath": "github.com/Smerity/govarint",
 			"repository": "https://github.com/Smerity/govarint",
 			"revision": "7265e41f48f15fd61751e16da866af3c704bb3ab",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/auth0/go-jwt-middleware",
+			"repository": "https://github.com/auth0/go-jwt-middleware",
+			"revision": "5493cabe49f7bfa6e2ec444a09d334d90cd4e2bd",
 			"branch": "master"
 		},
 		{
@@ -90,6 +102,24 @@
 			"importpath": "github.com/cznic/b",
 			"repository": "https://github.com/cznic/b",
 			"revision": "c0c71e655879a2848b5a0e0208b63f97325cbacd",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/dgraph-io/badger",
+			"repository": "https://github.com/dgraph-io/badger",
+			"revision": "eb896774720b048843c328698beae82d6246f7ac",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/dgrijalva/jwt-go",
+			"repository": "https://github.com/dgrijalva/jwt-go",
+			"revision": "dbeaa9332f19a944acb5736b4456cfcc02140e29",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/dgryski/go-farm",
+			"repository": "https://github.com/dgryski/go-farm",
+			"revision": "2de33835d10275975374b37b2dcfd22c9020a1f5",
 			"branch": "master"
 		},
 		{
@@ -200,6 +230,12 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/pkg/errors",
+			"repository": "https://github.com/pkg/errors",
+			"revision": "e881fd58d78e04cf6d0de1217f8707c8cc2249bc",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/rcrowley/go-metrics",
 			"repository": "https://github.com/rcrowley/go-metrics",
 			"revision": "e181e095bae94582363434144c61a9653aff6e50",
@@ -279,6 +315,20 @@
 			"revision": "d866cfc389cec985d6fda2859936a575a55a3ab6",
 			"branch": "master",
 			"path": "/context"
+		},
+		{
+			"importpath": "golang.org/x/net/internal/timeseries",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec",
+			"branch": "master",
+			"path": "/internal/timeseries"
+		},
+		{
+			"importpath": "golang.org/x/net/trace",
+			"repository": "https://go.googlesource.com/net",
+			"revision": "5ccada7d0a7ba9aeb5d3aca8d3501b4c2a509fec",
+			"branch": "master",
+			"path": "/trace"
 		},
 		{
 			"importpath": "golang.org/x/text/transform",
