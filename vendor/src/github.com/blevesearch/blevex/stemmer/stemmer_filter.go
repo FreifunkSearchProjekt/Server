@@ -12,9 +12,9 @@ package stemmer
 import (
 	"fmt"
 
+	"github.com/tebeka/snowball"
 	"github.com/blevesearch/bleve/analysis"
 	"github.com/blevesearch/bleve/registry"
-	"github.com/tebeka/snowball"
 )
 
 const Name = "stem"

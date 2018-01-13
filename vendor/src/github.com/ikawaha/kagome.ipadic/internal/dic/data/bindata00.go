@@ -1,6 +1,6 @@
 package data
 
-import (
+import(
 	"os"
 	"time"
 )
@@ -24,3 +24,4 @@ func dicIpaChardefDic() (*asset, error) {
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
+
