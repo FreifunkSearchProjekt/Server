@@ -11,7 +11,6 @@ import (
 	"log"
 	"net/http"
 	"net/http/pprof"
-	"time"
 )
 
 var pathPtr = flag.String("path", "my_registration_file.yaml", "The path to which to write the generated Registration YAML")
@@ -50,18 +49,14 @@ func Setup() (r *mux.Router) {
 func Begin(cleanHandler http.Handler, conf *config.Config) {
 	handler := cors.Default().Handler(cleanHandler)
 	srv4 := &http.Server{
-		Handler:      handler,
-		Addr:         "0.0.0.0:9999",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler: handler,
+		Addr:    "0.0.0.0:9999",
 	}
 	log.Fatal(srv4.ListenAndServe())
 
 	srv6 := &http.Server{
-		Handler:      handler,
-		Addr:         "[::]:9999",
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		Handler: handler,
+		Addr:    "[::]:9999",
 	}
 	log.Fatal(srv6.ListenAndServe())
 }

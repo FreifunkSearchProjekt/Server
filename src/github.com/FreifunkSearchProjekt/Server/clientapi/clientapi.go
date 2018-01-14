@@ -11,6 +11,8 @@ import (
 	"strconv"
 )
 
+var idxrG indexing.Indexer
+
 var SigningKey = []byte("Jl3DyPkeWLjCytk61dXVHLPZcyr8WXwTinPLn3ttgOI6uxNtEffgZxxuMENXfVg4qK5lqgw3AjeKKBVxCTDUMWhi9uWMahPe0s2Y3BMF0x7K2bKE3zyR3DOt2eqhnbPL")
 
 type registerRequest struct {
@@ -41,6 +43,8 @@ func truncateString(str string, num int) string {
 }
 
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
+	idxrG = idxr
+
 	r.HandleFunc("/clientapi/search/{communityID}/{query}/max/", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]
@@ -57,45 +61,8 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		w.Write([]byte(res))
 	}).Methods("GET")
 
-	r.HandleFunc("/clientapi/search/{communityID}/{query}/", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		communityID := vars["communityID"]
-		query := vars["query"]
-		from, found := vars["from"]
-		var fromInt int
-		if !found {
-			fromInt = 0
-		} else if found {
-			var err error
-			fromInt, err = strconv.Atoi(from)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}
-		log.Println("Got new Search Request")
-
-		res, queryErr := idxr.Query(communityID, query, fromInt)
-		if queryErr != nil {
-			http.Error(w, queryErr.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		for _, v := range res.Hits {
-			if v.Fields["Description"] != nil {
-				v.Fields["Description"] = truncateString(v.Fields["Description"].(string), 260)
-			}
-		}
-
-		hits, err := json.Marshal(res)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(hits)
-	}).Methods("GET")
+	r.HandleFunc("/clientapi/search/{communityID}/{query}/", query).Methods("GET")
+	r.HandleFunc("/clientapi/search/{communityID}/{query}/{from}/", query).Methods("GET")
 
 	r.HandleFunc("/clientapi/fields/{communityID}/", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -186,4 +153,44 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		w.Write([]byte("{}"))
 		return
 	})*/
+}
+
+var query = func(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	communityID := vars["communityID"]
+	query := vars["query"]
+	from, found := vars["from"]
+	var fromInt int
+	if !found {
+		fromInt = 0
+	} else if found {
+		var err error
+		fromInt, err = strconv.Atoi(from)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+	log.Println("Got new Search Request")
+
+	res, queryErr := idxrG.Query(communityID, query, fromInt)
+	if queryErr != nil {
+		http.Error(w, queryErr.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	for _, v := range res.Hits {
+		if v.Fields["Description"] != nil {
+			v.Fields["Description"] = truncateString(v.Fields["Description"].(string), 260)
+		}
+	}
+
+	hits, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(hits)
 }
