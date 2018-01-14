@@ -65,7 +65,7 @@ func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewFuzzyQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
 	searchTerm := bleve.NewQueryStringQuery(query)
-	searchRequest := bleve.NewSearchRequest(searchTerm)
+	searchRequest := bleve.NewSearchRequestOptions(searchTerm, -1, 0, false)
 	searchRequest.Fields = make([]string, 5)
 	searchRequest.Fields[0] = "url"
 	searchRequest.Fields[1] = "host"
