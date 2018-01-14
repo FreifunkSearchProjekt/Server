@@ -78,11 +78,11 @@ func (i *Indexer) QueryMaxSize(id, query string) (string, error) {
 	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
 	index, err := i.getIndex(id)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	searchResult, err := index.Search(searchRequest)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
 	return strconv.Itoa(searchResult.Hits.Len()), nil
 }
