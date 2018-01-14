@@ -57,6 +57,7 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		b := make([]byte, 8)
 		binary.LittleEndian.PutUint64(b, uint64(res))
 
+		w.Header().Set("Content-Type", "text/plain")
 		w.Write(b)
 	}).Methods("GET")
 
