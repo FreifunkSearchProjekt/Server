@@ -180,8 +180,8 @@ var query = func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	for _, v := range res.Hits {
-		if v.Fields["Description"] != nil {
-			v.Fields["Description"] = truncateString(v.Fields["Description"].(string), 260)
+		if v.Fields["description"] != nil {
+			v.Fields["description"] = truncateString(v.Fields["description"].(string), 260)
 		}
 	}
 
