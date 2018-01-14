@@ -60,13 +60,14 @@ func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
 	return index.Fields()
 }
 
-func (i *Indexer) Query(id, query string) (*bleve.SearchResult, error) {
+func (i *Indexer) Query(id, query string, from int) (*bleve.SearchResult, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewMatchQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewFuzzyQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
 	searchTerm := bleve.NewQueryStringQuery(query)
 	const MaxUint = ^uint(0)
-	searchRequest := bleve.NewSearchRequestOptions(searchTerm, int(MaxUint>>1), 0, false)
+	// TODO Use the from instead of getting all at the same time.
+	searchRequest := bleve.NewSearchRequestOptions(searchTerm, int(MaxUint>>1), from, false)
 	searchRequest.Fields = make([]string, 5)
 	searchRequest.Fields[0] = "url"
 	searchRequest.Fields[1] = "host"

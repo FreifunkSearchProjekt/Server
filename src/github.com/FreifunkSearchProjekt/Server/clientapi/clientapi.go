@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 var SigningKey = []byte("Jl3DyPkeWLjCytk61dXVHLPZcyr8WXwTinPLn3ttgOI6uxNtEffgZxxuMENXfVg4qK5lqgw3AjeKKBVxCTDUMWhi9uWMahPe0s2Y3BMF0x7K2bKE3zyR3DOt2eqhnbPL")
@@ -40,13 +41,25 @@ func truncateString(str string, num int) string {
 }
 
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
-	r.HandleFunc("/clientapi/search/{communityID}/{query}", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/clientapi/search/{communityID}/{query}/{from}/", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]
 		query := vars["query"]
+		from := vars["from"]
+		var fromInt int
+		if from == "" {
+			fromInt = 0
+		} else {
+			var err error
+			fromInt, err = strconv.Atoi(from)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
 		log.Println("Got new Search Request")
 
-		res, queryErr := idxr.Query(communityID, query)
+		res, queryErr := idxr.Query(communityID, query, fromInt)
 		if queryErr != nil {
 			http.Error(w, queryErr.Error(), http.StatusInternalServerError)
 			return
