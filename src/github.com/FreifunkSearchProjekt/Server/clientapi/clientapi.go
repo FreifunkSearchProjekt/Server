@@ -60,15 +60,15 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 		w.Write(b)
 	}).Methods("GET")
 
-	r.HandleFunc("/clientapi/search/{communityID}/{query}/{from}/", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/clientapi/search/{communityID}/{query}/", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]
 		query := vars["query"]
-		from := vars["from"]
+		from, found := vars["from"]
 		var fromInt int
-		if from == "" {
+		if !found {
 			fromInt = 0
-		} else {
+		} else if found {
 			var err error
 			fromInt, err = strconv.Atoi(from)
 			if err != nil {
