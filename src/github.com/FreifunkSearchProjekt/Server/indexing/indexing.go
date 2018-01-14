@@ -5,6 +5,7 @@ import (
 	"github.com/blevesearch/bleve"
 	"github.com/blevesearch/bleve/mapping"
 	"github.com/blevesearch/bleve/search/highlight/format/html"
+	"strconv"
 	"sync"
 )
 
@@ -60,7 +61,7 @@ func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
 	return index.Fields()
 }
 
-func (i *Indexer) QueryMaxSize(id, query string) (int64, error) {
+func (i *Indexer) QueryMaxSize(id, query string) (string, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewMatchQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewFuzzyQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
@@ -83,7 +84,7 @@ func (i *Indexer) QueryMaxSize(id, query string) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
-	return int64(searchResult.Hits.Len()), nil
+	return strconv.Itoa(searchResult.Hits.Len()), nil
 }
 
 func (i *Indexer) Query(id, query string, from int) (*bleve.SearchResult, error) {

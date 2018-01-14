@@ -1,7 +1,6 @@
 package clientapi
 
 import (
-	"encoding/binary"
 	"encoding/json"
 	"github.com/FreifunkSearchProjekt/Server/database"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
@@ -54,11 +53,8 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 			return
 		}
 
-		b := make([]byte, 8)
-		binary.LittleEndian.PutUint64(b, uint64(res))
-
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write(b)
+		w.Write([]byte(res))
 	}).Methods("GET")
 
 	r.HandleFunc("/clientapi/search/{communityID}/{query}/", func(w http.ResponseWriter, r *http.Request) {
