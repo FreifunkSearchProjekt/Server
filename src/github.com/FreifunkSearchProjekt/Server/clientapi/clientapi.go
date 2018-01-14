@@ -1,6 +1,7 @@
 package clientapi
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"github.com/FreifunkSearchProjekt/Server/database"
 	"github.com/FreifunkSearchProjekt/Server/indexing"
@@ -41,6 +42,24 @@ func truncateString(str string, num int) string {
 }
 
 func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
+	r.HandleFunc("/clientapi/search/{communityID}/{query}/max/", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		communityID := vars["communityID"]
+		query := vars["query"]
+		log.Println("Got new Search Request")
+
+		res, queryErr := idxr.QueryMaxSize(communityID, query)
+		if queryErr != nil {
+			http.Error(w, queryErr.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		b := make([]byte, 8)
+		binary.LittleEndian.PutUint64(b, uint64(res))
+
+		w.Write(b)
+	}).Methods("GET")
+
 	r.HandleFunc("/clientapi/search/{communityID}/{query}/{from}/", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		communityID := vars["communityID"]

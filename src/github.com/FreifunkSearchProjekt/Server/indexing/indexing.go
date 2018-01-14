@@ -60,14 +60,38 @@ func (i *Indexer) GetFields(CommunityID string) ([]string, error) {
 	return index.Fields()
 }
 
-func (i *Indexer) Query(id, query string, from int) (*bleve.SearchResult, error) {
+func (i *Indexer) QueryMaxSize(id, query string) (int64, error) {
 	//searchRequest := bleve.NewSearchRequest(bleve.NewMatchQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewFuzzyQuery(query))
 	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
 	searchTerm := bleve.NewQueryStringQuery(query)
 	const MaxUint = ^uint(0)
 	// TODO Use the from instead of getting all at the same time.
-	searchRequest := bleve.NewSearchRequestOptions(searchTerm, int(MaxUint>>1), from, false)
+	searchRequest := bleve.NewSearchRequestOptions(searchTerm, int(MaxUint>>1), 0, false)
+	searchRequest.Fields = make([]string, 5)
+	searchRequest.Fields[0] = "url"
+	searchRequest.Fields[1] = "host"
+	searchRequest.Fields[2] = "path"
+	searchRequest.Fields[3] = "title"
+	searchRequest.Fields[4] = "description"
+	searchRequest.Highlight = bleve.NewHighlightWithStyle(html.Name)
+	index, err := i.getIndex(id)
+	if err != nil {
+		return 0, err
+	}
+	searchResult, err := index.Search(searchRequest)
+	if err != nil {
+		return 0, err
+	}
+	return int64(searchResult.Hits.Len()), nil
+}
+
+func (i *Indexer) Query(id, query string, from int) (*bleve.SearchResult, error) {
+	//searchRequest := bleve.NewSearchRequest(bleve.NewMatchQuery(query))
+	//searchRequest := bleve.NewSearchRequest(bleve.NewFuzzyQuery(query))
+	//searchRequest := bleve.NewSearchRequest(bleve.NewQueryStringQuery(query))
+	searchTerm := bleve.NewQueryStringQuery(query)
+	searchRequest := bleve.NewSearchRequestOptions(searchTerm, 10, from, false)
 	searchRequest.Fields = make([]string, 5)
 	searchRequest.Fields[0] = "url"
 	searchRequest.Fields[1] = "host"
