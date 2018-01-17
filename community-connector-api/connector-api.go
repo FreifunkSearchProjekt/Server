@@ -51,16 +51,16 @@ func RegisterHandler(r *mux.Router, idxr indexing.Indexer) {
 			}
 		}
 
-		for i := range txn.RssFeed {
-			log.Println(txn.RssFeed[i].URL)
+		for i := range txn.Feeds {
+			log.Println(txn.Feeds[i].URL)
 			rssfeed := indexing.FeedBasic{
-				URL:         txn.RssFeed[i].URL,
-				Host:        txn.RssFeed[i].Host,
-				Path:        txn.RssFeed[i].Path,
-				Title:       txn.RssFeed[i].Title,
-				Description: txn.RssFeed[i].Description,
+				URL:         txn.Feeds[i].URL,
+				Host:        txn.Feeds[i].Host,
+				Path:        txn.Feeds[i].Path,
+				Title:       txn.Feeds[i].Title,
+				Description: txn.Feeds[i].Description,
 			}
-			err := idxr.AddBasicFeed(txn.RssFeed[i].URL+txn.RssFeed[i].Path, communityID, rssfeed)
+			err := idxr.AddBasicFeed(txn.Feeds[i].URL+txn.Feeds[i].Path, communityID, rssfeed)
 			if err != nil {
 				log.Println("[ERR] ", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
