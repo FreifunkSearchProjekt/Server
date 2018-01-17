@@ -52,3 +52,7 @@
 [[constraint]]
   branch = "v2"
   name = "gopkg.in/yaml.v2"
+
+[[constraint]]
+  name = "github.com/ory/fosite"
+  version = "0.16.1"
